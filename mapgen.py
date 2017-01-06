@@ -33,35 +33,48 @@ class Shape:
         new_sector.tx_ceil = self.tx_ceil
         new_sector.light = self.light
 
+        def add_vertex(v_id):
+            # first have a look in the map's vertexes to see if the one we want
+            # to add is already there, and just return that instead
+            for vx in mapedit.vertexes:
+                if self.vertexes[v_id][0] == vx.x:
+                    if self.vertexes[v_id][1] == vx.y:
+                        return mapedit.vertexes.index(vx)
+
+            # give an index for the vertex in our own vertexes list, 
+            # and add it to the map, returning an index in the map's vertexes list
+            new_vx = omg.mapedit.Vertex()
+            new_vx.x = self.vertexes[v_id][0]
+            new_vx.y = self.vertexes[v_id][1]
+            mapedit.vertexes.append(new_vx)
+            return len(mapedit.vertexes)-1
+
         # due to the dodgy way i'm adding lines, we store this data so the loop works correctly
-        new_vxb = omg.mapedit.Vertex()
-        new_vxb.x = self.vertexes[0][0]
-        new_vxb.y = self.vertexes[0][1]
+        vxb = add_vertex(0)
+
         for i in range(len(self.vertexes)-1):
             # set up all the new data
-            new_vxa = new_vxb
+            vxa = vxb
 
-            new_vxb = omg.mapedit.Vertex()
-            new_vxb.x = self.vertexes[i+1][0]
-            new_vxb.y = self.vertexes[i+1][1]
+            vxb = add_vertex(i+1)
 
             new_side = omg.mapedit.Sidedef()
             new_side.tx_mid = self.tx_sides
             new_side.sector = len(mapedit.sectors)
 
             new_line = omg.mapedit.Linedef()
-            new_line.vx_a = len(mapedit.vertexes)
-            new_line.vx_b = len(mapedit.vertexes) + 1
+            new_line.vx_a = vxa
+            new_line.vx_b = vxb
             new_line.flags = 1
             new_line.front = len(mapedit.sidedefs)
 
             # add the new data
-            mapedit.vertexes.append(new_vxa)
+            
             mapedit.sidedefs.append(new_side)
             mapedit.linedefs.append(new_line)
 
         # finally, add the last vertex and sector
-        mapedit.vertexes.append(new_vxb)
+        add_vertex(len(self.vertexes)-1)
         mapedit.sectors.append(new_sector)
 
         self.vertexes.reverse() 
