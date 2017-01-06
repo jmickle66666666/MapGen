@@ -49,29 +49,46 @@ class Shape:
             mapedit.vertexes.append(new_vx)
             return len(mapedit.vertexes)-1
 
+        def add_sidedef(sector, texture):
+            new_side = omg.mapedit.Sidedef()
+            new_side.tx_mid = texture
+            new_side.sector = sector
+            mapedit.sidedefs.append(new_side)
+            return len(mapedit.sidedefs)-1
+
+        def add_line(vx_a,vx_b,sidedef):
+            # first check if there is already a line in the map using these vertexes
+            # but the other way round, and if so we attach onto the back of
+            # that line, and don't create a new one
+            for ld in mapedit.linedefs:
+                if ld.vx_a == vx_b:
+                    if ld.vx_b == vx_a:
+                        ld.back = sidedef
+                        # fix texturing too
+                        mapedit.sidedefs[ld.front].tx_up = mapedit.sidedefs[ld.front].tx_mid
+                        mapedit.sidedefs[ld.front].tx_low = mapedit.sidedefs[ld.front].tx_mid
+                        mapedit.sidedefs[ld.front].tx_mid = '-'
+                        mapedit.sidedefs[ld.back].tx_up = mapedit.sidedefs[ld.back].tx_mid
+                        mapedit.sidedefs[ld.back].tx_low = mapedit.sidedefs[ld.back].tx_mid
+                        mapedit.sidedefs[ld.back].tx_mid = '-'
+                        return
+
+            # create a line
+            new_line = omg.mapedit.Linedef()
+            new_line.vx_a = vx_a
+            new_line.vx_b = vx_b
+            new_line.flags = 1
+            new_line.front = sidedef
+            mapedit.linedefs.append(new_line)
+
         # due to the dodgy way i'm adding lines, we store this data so the loop works correctly
         vxb = add_vertex(0)
 
         for i in range(len(self.vertexes)-1):
-            # set up all the new data
             vxa = vxb
-
             vxb = add_vertex(i+1)
-
-            new_side = omg.mapedit.Sidedef()
-            new_side.tx_mid = self.tx_sides
-            new_side.sector = len(mapedit.sectors)
-
-            new_line = omg.mapedit.Linedef()
-            new_line.vx_a = vxa
-            new_line.vx_b = vxb
-            new_line.flags = 1
-            new_line.front = len(mapedit.sidedefs)
-
-            # add the new data
-            
-            mapedit.sidedefs.append(new_side)
-            mapedit.linedefs.append(new_line)
+            sd = add_sidedef(len(mapedit.sectors),self.tx_sides)
+            add_line(vxa,vxb,sd)
 
         # finally, add the last vertex and sector
         add_vertex(len(self.vertexes)-1)
