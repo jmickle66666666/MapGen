@@ -12,9 +12,10 @@ omgifol https://github.com/devinacker/omgifol
 - Draw sectors with lists of vertexes
 - Join sectors that have overlapping lines
 - Join sectors correctly at varying floor heights
+- Split lines if a vertex lands on them, then join
 
 ## Todo:
-- Split lines if a vertex lands on them, then join
+- Decide what's next
 
 ## Future:
 - Generate maps!
