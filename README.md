@@ -8,11 +8,11 @@ shows an image of the generated level, outputs test.wad
 ## Requirements:
 omgifol https://github.com/devinacker/omgifol
 
-## Currently:
-- Draws sectors with lists of vertexes
+## Done:
+- Draw sectors with lists of vertexes
+- Join sectors that have overlapping lines
 
 ## Todo:
-- Join sectors that have overlapping lines
 - Split lines if a vertex lands on them, then join
 - Join sectors correctly at varying floor heights
 
